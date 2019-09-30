@@ -11,7 +11,8 @@ type AI interface{}
 
 //AIController controls all the AI elements for the game
 type AIController struct {
-	launchers []*AILauncher
+	launchers  []*AILauncher
+	updateTick int
 }
 
 //CreateAIController returns a new AIController
@@ -25,7 +26,25 @@ func CreateAIController() *AIController {
 
 //Update the AIController. This will coordinate all different AI Types
 func (a *AIController) Update(p *Planet) {
+	increaseDifficulty := false
+	a.updateTick++
+	if a.updateTick > 7200 { //2 minutes
+		a.updateTick = 0
+		increaseDifficulty = true
+	}
 	for _, l := range a.launchers {
+		if increaseDifficulty {
+			//log.Println("INCREASE!!")
+			l.extraLaunches++
+			l.minTime -= 60
+			l.maxTime -= 60
+			if l.minTime < 60 {
+				l.minTime = 60
+			}
+			if l.maxTime < 120 {
+				l.maxTime = 120
+			}
+		}
 		l.Update(p)
 	}
 }

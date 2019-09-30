@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"sort"
 )
 
 //Record contains the name and score
@@ -22,7 +23,12 @@ func (l *LeaderBoard) SetPosition(index int, name string, score int) bool {
 	if index < 0 || index >= len(l.Records) {
 		return false
 	}
-	l.Records[index] = &Record{Name: name, Score: score}
+	l.Records = append(l.Records, &Record{Name: name, Score: score})
+	sort.Slice(l.Records, func(i int, j int) bool {
+		return l.Records[i].Score > l.Records[j].Score
+	})
+	l.Records = l.Records[:len(l.Records)-1] // remove last record
+	//l.Records[index] = &Record{Name: name, Score: score}
 	return true
 }
 
