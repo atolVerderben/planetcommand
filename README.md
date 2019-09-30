@@ -1,4 +1,4 @@
-![Planet Command](assets/GameTitleScreen.png)
+![Planet Command](assets/screens/planet-command-intro.gif)
 
 In the year 20XX, after most of the world has been destroyed by mysterious little green missiles from space, only 4 cities remain able to defend the planet!
 
