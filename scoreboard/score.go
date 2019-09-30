@@ -48,9 +48,9 @@ func (l LeaderBoard) DeterminePosition(score int) int {
 }
 
 //SaveHighScores of the leaderboard to a json file
-func (lb *LeaderBoard) SaveHighScores() bool {
+func (l *LeaderBoard) SaveHighScores() bool {
 
-	leader, err := json.Marshal(lb)
+	leader, err := json.Marshal(l)
 	if err != nil {
 		return false
 	}
@@ -63,7 +63,7 @@ func (lb *LeaderBoard) SaveHighScores() bool {
 
 //LoadHighScores from the scores.json file into a leaderboard
 func LoadHighScores() *LeaderBoard {
-	lb := &LeaderBoard{
+	l := &LeaderBoard{
 		Records: []*Record{},
 	}
 
@@ -73,6 +73,6 @@ func LoadHighScores() *LeaderBoard {
 		//os.Exit(1)
 	}
 
-	json.Unmarshal(raw, lb)
-	return lb
+	json.Unmarshal(raw, l)
+	return l
 }

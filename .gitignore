@@ -4,5 +4,5 @@ assets/sample
 *.exe
 *.bin
 scores.json
-internal/
 *.zip
+release/

@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	"time"
 
+	assets "github.com/atolVerderben/planetcommand/plancom/internal"
 	"github.com/atolVerderben/tentsuyu"
 	"github.com/hajimehoshi/ebiten"
-	//assets "github.com/atolVerderben/planetcommand/plancom/internal"
 )
 
 //Game is the tentsuyu.Game which contains all the relevant library attributes
@@ -50,7 +50,7 @@ func NewGame(w, h float64) (game *tentsuyu.Game, err error) {
 
 	game.Input.RegisterButton("ToggleMute", ebiten.KeyM)
 
-	game.UIController.AddFontFile(FntMain, "assets/font/Kanit-Bold.ttf")
+	game.UIController.AddFontFromBytes(FntMain, assets.KANIT_BOLD_TTF)
 
 	game.LoadImages(func() *tentsuyu.ImageManager {
 		return loadImages()
