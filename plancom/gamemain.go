@@ -3,7 +3,6 @@ package plancom
 import (
 	"image/color"
 	"math/rand"
-	"os"
 	"strconv"
 
 	"github.com/atolVerderben/planetcommand/scoreboard"
@@ -83,7 +82,7 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		currentLevel:  1,
 		overlayX:      300,
 		overlayY:      40,
-		overlayText:   tentsuyu.NewTextElementStationary(720, 40, 720, 720, game.UIController.ReturnFont(FntMain), []string{}, textColor, 24),
+		overlayText:   tentsuyu.NewTextElementStationary(720, 40, 720, 720, game.UIController.ReturnFont(FntMain), []string{}, color.RGBA{249, 200, 14, 255}, 24),
 		deathDelay:    180,
 		scoreEntry:    NewScoreEntry(0, 80),
 		scoreSaveSpot: -1,
@@ -115,7 +114,7 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		[]func(){func() { g.SetMsg(GameStateMsgMain) }})
 	g.restartMenu.AddElement([]tentsuyu.UIElement{tentsuyu.NewTextElement(0, 0, 200, 40, game.UIController.ReturnFont(FntMain), []string{"QUIT GAME"}, textColor, 32)},
 		[]func(){func() {
-			os.Exit(0)
+			g.SetMsg(GameStateMsgTitle) //os.Exit(0)
 		}})
 
 	for _, m := range g.restartMenu.Elements {
@@ -125,9 +124,21 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 	g.triangleImage, _ = ebiten.NewImage(int(ScreenWidth), int(ScreenHeight), ebiten.FilterDefault)
 	g.mainGameScreen, _ = ebiten.NewImage(int(g.width), int(g.height), ebiten.FilterDefault)
 	g.triangleImage.Fill(color.RGBA{212, 0, 120, 255})
+	/*
+		In the year 20XX, after most of the world has been destroyed by mysterious little green missiles from space, only 4 cities remain able to defend the planet!
 
+		Command the cannons to destroy the lasers and SAVE THE WORLD!
+	*/
 	game.AdditionalCameras["MainCamera"] = g.mainCamera
-	g.SetOverlay([]string{"In the year 20XX we must survive!!!"}, 300, 0, 0, true)
+	g.SetOverlay([]string{"In the year 20XX, after most of the world has been",
+		"destroyed by mysterious little green missiles from space,",
+		"only 4 cities remain able to defend the planet!",
+		"Command the cannons to destroy the lasers and...", "", "                             SAVE THE WORLD!",
+		"", "", "", "", "", "", "", "", "", "", "", "",
+		"                                   CONTROLS:",
+		"      LEFT AND RIGHT ARROWS: ROTATE CANNONS",
+		"    CLICK MOUSE WITHIN THE CONES TO FIRE MISSILES",
+		"", "", "                                CLICK TO BEGIN"}, 300, 0, 0, true)
 
 	g.cannonDisp = newcannonDisplay(g.cannons, game.UIController.ReturnFont(FntMain))
 

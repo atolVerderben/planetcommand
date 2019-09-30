@@ -22,6 +22,7 @@ func loadImages() *tentsuyu.ImageManager {
 	imageManager.LoadImageFromFile("cannon", "assets/cannon.png")
 	imageManager.LoadImageFromFile("side-panel", "assets/side-panel.png")
 	imageManager.LoadImageFromFile("explosion", "assets/explosion.png")
+	imageManager.LoadImageFromFile("title", "assets/GameTitleScreen.png")
 
 	return imageManager
 }

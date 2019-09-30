@@ -64,8 +64,10 @@ func NewGame(w, h float64) (game *tentsuyu.Game, err error) {
 		switch game.GetGameState().Msg() {
 		case GameStateMsgMain:
 			game.SetGameState(NewGameMain(game))
+		case GameStateMsgTitle:
+			game.SetGameState(NewTitleScreen(game))
 		case tentsuyu.GameStateMsgNotStarted:
-			game.SetGameState(NewGameMain(game))
+			game.SetGameState(NewTitleScreen(game))
 		default:
 
 		}
@@ -78,5 +80,6 @@ func NewGame(w, h float64) (game *tentsuyu.Game, err error) {
 
 //GameState Messages used for this game
 var (
-	GameStateMsgMain tentsuyu.GameStateMsg = "MainGame"
+	GameStateMsgMain  tentsuyu.GameStateMsg = "MainGame"
+	GameStateMsgTitle tentsuyu.GameStateMsg = "Game Title Screen"
 )
