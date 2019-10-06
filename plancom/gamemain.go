@@ -90,6 +90,7 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		scoreEntry:    NewScoreEntry(0, 80),
 		scoreSaveSpot: -1,
 		ufos:          []*AIUfo{},
+		ufoSpawnRate:  360,
 	}
 
 	g.scoreDisplay = &tentsuyu.MenuElement{
@@ -298,6 +299,14 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 	//Move the Planet, for a later iteration!
 	//g.updatePlanetMovement(game)
 
+	if g.ufoSpawnCounter > 0 {
+		g.ufoSpawnCounter++
+		if g.ufoSpawnCounter > g.ufoSpawnRate {
+			g.ufoSpawnCounter = 0
+			g.ufos = append(g.ufos, SpawnUFO(-20, 200))
+		}
+	}
+
 	for _, c := range g.cannons {
 		c.Update(g.planet)
 		for _, m := range c.missiles {
@@ -389,6 +398,20 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 	}
 
 	for _, u := range g.ufos {
+		for _, e := range g.explosions {
+			if e.givePoints { //Fired from Player
+				if tentsuyu.Collision(e.BasicObject, u.BasicObject) {
+					u.Hit()
+					if u.IsDead() {
+						defer g.RemoveUFO(u.GetIDasString())
+						g.explosions = append(g.explosions, CreateExplosion(u.GetX(), u.GetY(), e.givePoints))
+						n := rand.Intn(5) + 1
+						game.AudioPlayer.PlaySE("explosion" + strconv.Itoa(n))
+						g.ufoSpawnCounter = 1
+					}
+				}
+			}
+		}
 		u.Update(g.planet, g.mainGameArea)
 	}
 
@@ -584,6 +607,20 @@ func (g *GameMain) RemoveExplosion(exID string) {
 	}
 	if delete >= 0 {
 		g.explosions = append(g.explosions[:delete], g.explosions[delete+1:]...)
+	}
+}
+
+//RemoveUFO from the game
+func (g *GameMain) RemoveUFO(exID string) {
+	delete := -1
+	for index, e := range g.ufos {
+		if e.GetIDasString() == exID {
+			delete = index
+			break
+		}
+	}
+	if delete >= 0 {
+		g.ufos = append(g.ufos[:delete], g.ufos[delete+1:]...)
 	}
 }
 

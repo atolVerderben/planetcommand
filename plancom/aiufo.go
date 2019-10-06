@@ -9,8 +9,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-//TODO: Implement a UFO for some variety
-
 //AIUfo controls the ufo that attacks the player planet
 type AIUfo struct {
 	*tentsuyu.BasicObject
@@ -21,6 +19,7 @@ type AIUfo struct {
 	idleCount, idleMax int
 	maxSpeed           float64
 	acc                float64
+	hitCooldown        int
 }
 
 //SpawnUFO at the provided coords
@@ -31,6 +30,7 @@ func SpawnUFO(x, y float64) *AIUfo {
 		maxSpeed:    3.0,
 		anim:        tentsuyu.NewAnimation(SpriteSheets["UFO"], []int{0, 1}, 5),
 		acc:         0.1,
+		Health:      2,
 	}
 	u.Speed = 3.0
 	return u
@@ -38,6 +38,15 @@ func SpawnUFO(x, y float64) *AIUfo {
 
 //Update the AIUfo
 func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
+	if u.hitCooldown > 0 {
+		if u.isIdle {
+			u.setIdle(false)
+		}
+		u.hitCooldown++
+		if u.hitCooldown > 120 {
+			u.hitCooldown = 0
+		}
+	}
 	if u.isIdle {
 		u.idleCount++
 		if u.idleCount > u.idleMax {
@@ -72,6 +81,8 @@ func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
 		u.Position.Add(*u.Velocity)
 		u.anim.Update()
 	}
+	u.X = u.Position.X
+	u.Y = u.Position.Y
 }
 
 //Draw the ufo
@@ -80,7 +91,9 @@ func (u *AIUfo) Draw(screen *ebiten.Image) error {
 	op.GeoM.Translate(-float64(u.Width)/2, -float64(u.Height)/2)
 	//op.GeoM.Rotate(u.Angle)
 	op.GeoM.Translate(u.GetX(), u.GetY())
-
+	if u.hitCooldown > 0 {
+		op.ColorM.Scale(1, 1, 1, 0.5)
+	}
 	screen.DrawImage(u.anim.ReturnImageParts().SubImage(Game.ImageManager.ReturnImage("ufo")), op)
 	return nil
 }
@@ -115,5 +128,31 @@ func (u *AIUfo) reachedDestination() {
 	if rand.Intn(2) == 1 {
 		u.setIdle(true)
 		u.idleMax = tentsuyutils.RandomBetween(60, 240)
+	}
+}
+
+//IsDead returns true if the UFO has no more health
+func (u AIUfo) IsDead() bool {
+	if u.Health <= 0 {
+		return true
+	}
+	return false
+}
+
+//IsAlive returns true if UFO health is greater than 0
+func (u AIUfo) IsAlive() bool {
+	return !u.IsDead()
+}
+
+//Hit updates the UFO to a hit state
+func (u *AIUfo) Hit() {
+	if u.hitCooldown > 0 {
+		u.hitCooldown++
+		return
+	}
+	u.Health--
+	u.hitCooldown = 1
+	if u.Health < 0 {
+		u.Health = 0
 	}
 }
