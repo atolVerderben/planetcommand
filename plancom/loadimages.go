@@ -30,6 +30,10 @@ func loadImages() *tentsuyu.ImageManager {
 	imageManager.LoadImageFromFile("side-panel", "assets/side-panel.png")
 	imageManager.LoadImageFromFile("explosion", "assets/explosion.png")
 	imageManager.LoadImageFromFile("title", "assets/GameTitleScreen.png")*/
+	imageManager.AddImageFromFile("ufo", "assets/enemies/ufo.png")
+
+	//SpriteSheets
+	SpriteSheets["UFO"] = tentsuyu.ReadSpriteSheet("assets/enemies/ufo.json")
 
 	return imageManager
 }

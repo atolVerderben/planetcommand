@@ -25,6 +25,8 @@ var (
 	FntMain = "FntKanit"
 	//AngleDrawOffset is 90 degrees (All images in spritesheet face UP... Right is 0 degrees/radians)
 	AngleDrawOffset = 1.5708
+	//SpriteSheets hold all the spritesheets for the game
+	SpriteSheets = map[string]*tentsuyu.SpriteSheet{}
 )
 
 func init() {

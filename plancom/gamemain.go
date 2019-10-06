@@ -59,6 +59,9 @@ type GameMain struct {
 	scoreSaveSpot int
 	scoreSaveName string
 	highscores    *highscoreDisplay
+
+	ufos                          []*AIUfo
+	ufoSpawnRate, ufoSpawnCounter int
 }
 
 //NewGameMain returns our main gamestate
@@ -86,6 +89,7 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		deathDelay:    180,
 		scoreEntry:    NewScoreEntry(0, 80),
 		scoreSaveSpot: -1,
+		ufos:          []*AIUfo{},
 	}
 
 	g.scoreDisplay = &tentsuyu.MenuElement{
@@ -151,6 +155,9 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		Action:     nil,
 		Selectable: false,
 	}
+
+	g.ufos = append(g.ufos, SpawnUFO(400, 150))
+
 	/*for _, r := range g.leaderboard.Records {
 		fmt.Printf("%v : %v\n", r.Name, r.Score)
 	}*/
@@ -381,6 +388,10 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 		}
 	}
 
+	for _, u := range g.ufos {
+		u.Update(g.planet, g.mainGameArea)
+	}
+
 	for _, e := range g.explosions {
 		e.Update()
 		if e.done {
@@ -485,10 +496,14 @@ func (g *GameMain) drawMain(screen *ebiten.Image) error {
 
 		}
 	}
-
+	//DRAW UFO
+	for _, u := range g.ufos {
+		u.Draw(screen)
+	}
 	op := &ebiten.DrawImageOptions{}
 	op.ColorM.Scale(1, 1, 1, 0.8)
 	screen.DrawImage(g.shadowImage, op)
+	//AFTER THIS POINT IS DRAWN ABOVE THE "SHADOW" IMAGE ==================================================================
 
 	if g.planet.IsAlive() {
 		op = &ebiten.DrawImageOptions{}
