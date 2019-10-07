@@ -38,6 +38,7 @@ func SpawnUFO(x, y float64) *AIUfo {
 
 //Update the AIUfo
 func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
+	u.anim.Update()
 	if u.hitCooldown > 0 {
 		if u.isIdle {
 			u.setIdle(false)
@@ -48,6 +49,7 @@ func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
 		}
 	}
 	if u.isIdle {
+		u.anim.SetFrameSpeed(9)
 		u.idleCount++
 		if u.idleCount > u.idleMax {
 			u.setIdle(false)
@@ -79,10 +81,12 @@ func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
 		u.Velocity.Y = u.acc * math.Sin(u.Angle)
 		u.Velocity.Limit(u.Speed)
 		u.Position.Add(*u.Velocity)
-		u.anim.Update()
+		u.anim.SetFrameSpeed(5)
+
 	}
 	u.X = u.Position.X
 	u.Y = u.Position.Y
+
 }
 
 //Draw the ufo

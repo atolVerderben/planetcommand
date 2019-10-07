@@ -143,7 +143,8 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		"                                   CONTROLS:",
 		"      LEFT AND RIGHT ARROWS: ROTATE CANNONS",
 		"    CLICK MOUSE WITHIN THE CONES TO FIRE MISSILES",
-		"", "", "                                CLICK TO BEGIN"}, 300, 0, 0, true)
+		"", "", "                                CLICK OR ENTER",
+		"                                     TO BEGIN"}, 300, 0, 0, true)
 
 	g.cannonDisp = newcannonDisplay(g.cannons, game.UIController.ReturnFont(FntMain))
 
@@ -157,11 +158,7 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		Selectable: false,
 	}
 
-	//g.ufos = append(g.ufos, SpawnUFO(400, 150))
 	g.spawnUFO()
-	/*for _, r := range g.leaderboard.Records {
-		fmt.Printf("%v : %v\n", r.Name, r.Score)
-	}*/
 
 	return g
 }
@@ -205,7 +202,7 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 		g.overlayTimer++
 		g.overlayDelay++
 		if g.overlayClickToContinue {
-			if game.Input.LeftClick().JustPressed() && g.overlayDelay > 30 {
+			if (game.Input.LeftClick().JustPressed() || game.Input.Button("Enter").JustPressed()) && g.overlayDelay > 30 {
 				g.overlayTimer = g.overlayTimeEnd
 				g.overlayClickToContinue = false
 			}
