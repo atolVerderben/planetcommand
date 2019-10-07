@@ -90,7 +90,7 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		scoreEntry:    NewScoreEntry(0, 80),
 		scoreSaveSpot: -1,
 		ufos:          []*AIUfo{},
-		ufoSpawnRate:  360,
+		ufoSpawnRate:  1200,
 	}
 
 	g.scoreDisplay = &tentsuyu.MenuElement{
@@ -157,8 +157,8 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		Selectable: false,
 	}
 
-	g.ufos = append(g.ufos, SpawnUFO(400, 150))
-
+	//g.ufos = append(g.ufos, SpawnUFO(400, 150))
+	g.spawnUFO()
 	/*for _, r := range g.leaderboard.Records {
 		fmt.Printf("%v : %v\n", r.Name, r.Score)
 	}*/
@@ -285,12 +285,12 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 		}
 	}
 
-	if game.Input.Button("RotateLeft").Down() {
+	if game.Input.Button("RotateLeft").Down() || game.Input.MouseWheelDown() {
 		for _, c := range g.cannons {
 			c.AddCommand(CommandLeft)
 		}
 	}
-	if game.Input.Button("RotateRight").Down() {
+	if game.Input.Button("RotateRight").Down() || game.Input.MouseWheelUp() {
 		for _, c := range g.cannons {
 			c.AddCommand(CommandRight)
 		}
@@ -302,8 +302,7 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 	if g.ufoSpawnCounter > 0 {
 		g.ufoSpawnCounter++
 		if g.ufoSpawnCounter > g.ufoSpawnRate {
-			g.ufoSpawnCounter = 0
-			g.ufos = append(g.ufos, SpawnUFO(-20, 200))
+			g.spawnUFO()
 		}
 	}
 
@@ -408,6 +407,7 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 						n := rand.Intn(5) + 1
 						game.AudioPlayer.PlaySE("explosion" + strconv.Itoa(n))
 						g.ufoSpawnCounter = 1
+						g.score += 10
 					}
 				}
 			}
@@ -446,6 +446,26 @@ func (g *GameMain) updatePlanetMovement(game *tentsuyu.Game) {
 	if game.Input.Button("Right").Down() {
 		g.planet.X += 2
 	}
+}
+
+func (g *GameMain) spawnUFO() {
+	g.ufoSpawnCounter = 0
+	switch n := rand.Intn(4); n {
+	case 0:
+		//Left
+		g.ufos = append(g.ufos, SpawnUFO(-20, float64(tentsuyutils.RandomBetween(0, g.mainGameArea.H))))
+	case 1:
+		//Up
+		g.ufos = append(g.ufos, SpawnUFO(float64(tentsuyutils.RandomBetween(0, g.mainGameArea.W)), -20))
+	case 2:
+		//Right
+		g.ufos = append(g.ufos, SpawnUFO(740, float64(tentsuyutils.RandomBetween(0, g.mainGameArea.H))))
+	case 3:
+		//Down
+		g.ufos = append(g.ufos, SpawnUFO(float64(tentsuyutils.RandomBetween(0, g.mainGameArea.W)), 740))
+
+	}
+
 }
 
 //Draw the gamestate scene
