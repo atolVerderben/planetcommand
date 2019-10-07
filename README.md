@@ -14,7 +14,8 @@ Developed for the [Open Jam 2019](https://itch.io/jam/open-jam-2019) with the go
 
 * Waves
 * Upgrades
-* UFOs
+* UFOs (Started)
+  * Add death animation
 * Smart Bombs
 * Improved AI
 

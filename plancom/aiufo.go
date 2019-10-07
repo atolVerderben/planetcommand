@@ -20,6 +20,7 @@ type AIUfo struct {
 	maxSpeed           float64
 	acc                float64
 	hitCooldown        int
+	wobble             float64
 }
 
 //SpawnUFO at the provided coords
@@ -30,7 +31,8 @@ func SpawnUFO(x, y float64) *AIUfo {
 		maxSpeed:    3.0,
 		anim:        tentsuyu.NewAnimation(SpriteSheets["UFO"], []int{0, 1}, 5),
 		acc:         0.1,
-		Health:      2,
+		Health:      3,
+		wobble:      0.1,
 	}
 	u.Speed = 3.0
 	return u
@@ -44,8 +46,20 @@ func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
 			u.setIdle(false)
 		}
 		u.hitCooldown++
+
+		if u.GetAngle() > 0.3 {
+			u.wobble *= -1
+			u.SetAngle(0.3)
+		}
+		if u.GetAngle() < -0.3 {
+			u.wobble *= -1
+			u.SetAngle(-0.3)
+		}
+
+		u.Angle += u.wobble
 		if u.hitCooldown > 120 {
 			u.hitCooldown = 0
+			u.SetAngle(0)
 		}
 	}
 	if u.isIdle {
@@ -76,9 +90,9 @@ func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
 		if u.acc < u.Speed {
 			u.acc += 0.1
 		}
-		u.SetAngle(math.Atan2(u.Destination.Y-u.GetY(), u.Destination.X-u.GetX()))
-		u.Velocity.X = u.acc * math.Cos(u.Angle)
-		u.Velocity.Y = u.acc * math.Sin(u.Angle)
+		angle := math.Atan2(u.Destination.Y-u.GetY(), u.Destination.X-u.GetX()) //u.SetAngle(math.Atan2(u.Destination.Y-u.GetY(), u.Destination.X-u.GetX()))
+		u.Velocity.X = u.acc * math.Cos(angle)
+		u.Velocity.Y = u.acc * math.Sin(angle)
 		u.Velocity.Limit(u.Speed)
 		u.Position.Add(*u.Velocity)
 		u.anim.SetFrameSpeed(5)
@@ -93,7 +107,7 @@ func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
 func (u *AIUfo) Draw(screen *ebiten.Image) error {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(-float64(u.Width)/2, -float64(u.Height)/2)
-	//op.GeoM.Rotate(u.Angle)
+	op.GeoM.Rotate(u.Angle)
 	op.GeoM.Translate(u.GetX(), u.GetY())
 	if u.hitCooldown > 0 {
 		op.ColorM.Scale(1, 1, 1, 0.5)
@@ -148,15 +162,17 @@ func (u AIUfo) IsAlive() bool {
 	return !u.IsDead()
 }
 
-//Hit updates the UFO to a hit state
-func (u *AIUfo) Hit() {
+//Hit updates the UFO to a hit state.
+//Returns true if ufo was not in invulnerable state, otherwise returns false
+func (u *AIUfo) Hit() bool {
 	if u.hitCooldown > 0 {
 		u.hitCooldown++
-		return
+		return false
 	}
 	u.Health--
 	u.hitCooldown = 1
 	if u.Health < 0 {
 		u.Health = 0
 	}
+	return true
 }

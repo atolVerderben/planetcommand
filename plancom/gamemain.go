@@ -93,6 +93,9 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		ufoSpawnRate:  1200,
 	}
 
+	//Spawn a UFO at the beginning of game play
+	g.ufoSpawnCounter = g.ufoSpawnRate
+
 	g.scoreDisplay = &tentsuyu.MenuElement{
 		UIElement:  tentsuyu.NewUINumberDisplayInt(&g.score, 1015, 35, 100, 100, game.UIController.ReturnFont(FntMain), 24, textColor),
 		Action:     nil,
@@ -157,8 +160,6 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		Action:     nil,
 		Selectable: false,
 	}
-
-	g.spawnUFO()
 
 	return g
 }
@@ -397,14 +398,18 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 		for _, e := range g.explosions {
 			if e.givePoints { //Fired from Player
 				if tentsuyu.Collision(e.BasicObject, u.BasicObject) {
-					u.Hit()
-					if u.IsDead() {
-						defer g.RemoveUFO(u.GetIDasString())
-						g.explosions = append(g.explosions, CreateExplosion(u.GetX(), u.GetY(), e.givePoints))
-						n := rand.Intn(5) + 1
-						game.AudioPlayer.PlaySE("explosion" + strconv.Itoa(n))
-						g.ufoSpawnCounter = 1
-						g.score += 10
+					if u.Hit() {
+						if u.IsDead() {
+							defer g.RemoveUFO(u.GetIDasString())
+							g.explosions = append(g.explosions, CreateExplosion(u.GetX(), u.GetY(), e.givePoints))
+							//n := rand.Intn(5) + 1
+							game.AudioPlayer.PlaySE("ufo-die")
+							//game.AudioPlayer.PlaySE("explosion" + strconv.Itoa(n))
+							g.ufoSpawnCounter = 1
+							g.score += 10
+						} else {
+							game.AudioPlayer.PlaySE("ufo-hit")
+						}
 					}
 				}
 			}
@@ -462,6 +467,7 @@ func (g *GameMain) spawnUFO() {
 		g.ufos = append(g.ufos, SpawnUFO(float64(tentsuyutils.RandomBetween(0, g.mainGameArea.W)), 740))
 
 	}
+	Game.AudioPlayer.PlaySE("ufo-in")
 
 }
 
