@@ -30,3 +30,7 @@ Developed for the [Open Jam 2019](https://itch.io/jam/open-jam-2019) with the go
 * GIMP for image manipulation
 * SE CC0 by rubberduck: <https://opengameart.org/content/50-cc0-retro-synth-sfx> and <https://opengameart.org/content/50-cc0-sci-fi-sfx>
 * BGM "Falling Organ" CC-by-4.0 by primallight: <https://opengameart.org/content/space-fast-synth-epic-themes>
+
+#### Licenses
+
+ All visual art files (.png) under assests folder were created by me, atolVerderben, and are available under the [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode). Please just attribute atolVerderben and link back to this github page: <https://github.com/atolVerderben/planetcommand>
