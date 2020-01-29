@@ -93,8 +93,8 @@ func CreateMissile(x, y, tx, ty, speed float64, color string) *Missile {
 
 //Update the missile
 func (m *Missile) Update() {
-	m.X += m.Velocity.X
-	m.Y += m.Velocity.Y
+	m.Position.X += m.Velocity.X
+	m.Position.Y += m.Velocity.Y
 }
 
 //Draw the missile
@@ -106,7 +106,7 @@ func (m *Missile) Draw(screen *ebiten.Image) error {
 	op.GeoM.Scale(2, 2)
 	op.GeoM.Translate(-float64(m.Width/2), -float64(m.Height/2))
 	//op.GeoM.Rotate(g.planet.Angle)
-	op.GeoM.Translate(m.X, m.Y)
+	op.GeoM.Translate(m.GetX(), m.GetY())
 	op.ColorM.Scale(m.cr, m.cg, m.cb, 1)
 
 	screen.DrawImage(Game.ImageManager.ReturnImage("pixel"), op)
@@ -116,7 +116,7 @@ func (m *Missile) Draw(screen *ebiten.Image) error {
 
 //DrawTrail of the Missile. This is separate so that it can be drawn at a different level
 func (m *Missile) DrawTrail(screen *ebiten.Image) {
-	ebitenutil.DrawLine(screen, m.X, m.Y, m.OriginX, m.OriginY, color.RGBA{m.ctr, m.ctg, m.ctb, 255})
+	ebitenutil.DrawLine(screen, m.GetX(), m.GetY(), m.OriginX, m.OriginY, color.RGBA{m.ctr, m.ctg, m.ctb, 255})
 }
 
 //Projectile is the generic

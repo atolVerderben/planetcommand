@@ -98,7 +98,7 @@ func CreateCannon(planet *Planet, angle float64, name string) *Cannon {
 	}
 
 	c.Angle = angle
-	c.X, c.Y = planet.X+(float64(c.Height/2)+planet.GetRadius())*math.Cos(c.Angle), planet.Y+(float64(c.Height/2)+planet.GetRadius())*math.Sin(c.Angle)
+	c.Position.X, c.Position.Y = planet.GetX()+(float64(c.Height/2)+planet.GetRadius())*math.Cos(c.Angle), planet.GetY()+(float64(c.Height/2)+planet.GetRadius())*math.Sin(c.Angle)
 
 	return c
 }
@@ -106,7 +106,7 @@ func CreateCannon(planet *Planet, angle float64, name string) *Cannon {
 //Update the cannon
 func (c *Cannon) Update(planet *Planet) {
 
-	c.Angle = math.Atan2(c.Y-planet.Y, c.X-planet.X)
+	c.Angle = math.Atan2(c.GetY()-planet.GetY(), c.GetX()-planet.GetX())
 
 	for _, comm := range c.commandQueue {
 		switch comm {
@@ -120,7 +120,7 @@ func (c *Cannon) Update(planet *Planet) {
 		c.commandQueue = []Command{}
 	}
 
-	c.X, c.Y = planet.X+(float64(c.Height/2)+planet.GetRadius())*math.Cos(c.Angle), planet.Y+(float64(c.Height/2)+planet.GetRadius())*math.Sin(c.Angle)
+	c.Position.X, c.Position.Y = planet.GetX()+(float64(c.Height/2)+planet.GetRadius())*math.Cos(c.Angle), planet.GetY()+(float64(c.Height/2)+planet.GetRadius())*math.Sin(c.Angle)
 
 	c.setLines()
 
@@ -192,8 +192,8 @@ func sign(p1, p2, p3 *tentsuyu.Vector2d) float64 {
 
 func (c *Cannon) setLines() {
 	offset := c.viewAngleOffset
-	x := c.X - (float64(c.Width/2) * math.Cos(c.Angle))
-	y := c.Y - (float64(c.Height/2) * math.Sin(c.Angle))
+	x := c.GetX() - (float64(c.Width/2) * math.Cos(c.Angle))
+	y := c.GetY() - (float64(c.Height/2) * math.Sin(c.Angle))
 	tx := x + (c.viewLineLength * math.Cos(c.Angle+offset))
 	ty := y + (c.viewLineLength * math.Sin(c.Angle+offset))
 	//ebitenutil.DrawLine(screen, x, y, tx, ty, color.RGBA{255, 255, 0, 150})
@@ -237,7 +237,7 @@ func (c Cannon) Draw(screen *ebiten.Image) error {
 	op.GeoM.Translate(-float64(c.Width/2), -float64(c.Height/2))
 	op.GeoM.Rotate(c.Angle + AngleDrawOffset)
 	//op.GeoM.Rotate(s.head.drawAngleAdj)
-	op.GeoM.Translate(c.X, c.Y)
+	op.GeoM.Translate(c.GetX(), c.GetY())
 
 	if c.Health == 1 {
 		c.imgParts.Sy = 32
@@ -258,7 +258,7 @@ func (c Cannon) DrawRays(screen *ebiten.Image) { //orig color: color.RGBA{247, 6
 func (c *Cannon) FireMissile(tx, ty float64) bool {
 	if c.canFire {
 		c.missiles = append(c.missiles,
-			CreateMissile(c.X, c.Y, tx, ty, c.missileSpeed, c.missileColor))
+			CreateMissile(c.GetX(), c.GetY(), tx, ty, c.missileSpeed, c.missileColor))
 		Game.AudioPlayer.PlaySE("blaster")
 		c.heat += c.heatIncrease
 		if c.heat >= c.heatMax {

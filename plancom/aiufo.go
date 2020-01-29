@@ -98,8 +98,6 @@ func (u *AIUfo) Update(p *Planet, playArea *tentsuyu.Rectangle) {
 		u.anim.SetFrameSpeed(5)
 
 	}
-	u.X = u.Position.X
-	u.Y = u.Position.Y
 
 }
 

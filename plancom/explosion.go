@@ -59,7 +59,7 @@ func (e *Explosion) Draw(screen *ebiten.Image) error {
 	op.GeoM.Scale(e.eScale, e.eScale)
 	op.GeoM.Translate(-float64(e.w/2), -float64(e.h/2))
 	//op.GeoM.Rotate(g.planet.Angle)
-	op.GeoM.Translate(e.X, e.Y)
+	op.GeoM.Translate(e.GetX(), e.GetY())
 	op.ColorM.Scale(e.r, e.g, e.b, 1)
 	screen.DrawImage(Game.ImageManager.ReturnImage("explosion"), op)
 

@@ -308,19 +308,19 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 		c.Update(g.planet)
 		for _, m := range c.missiles {
 			m.Update()
-			if tentsuyutils.Distance(m.X, m.Y, m.TargetX, m.TargetY) <= 2 {
+			if tentsuyutils.Distance(m.GetX(), m.GetY(), m.TargetX, m.TargetY) <= 2 {
 				defer c.RemoveMissile(m.GetIDasString())
 				//TODO: EXPLOSION
-				g.explosions = append(g.explosions, CreateExplosion(m.X, m.Y, true))
+				g.explosions = append(g.explosions, CreateExplosion(m.GetX(), m.GetY(), true))
 				n := rand.Intn(5) + 1
 				game.AudioPlayer.PlaySE("explosion" + strconv.Itoa(n))
 				continue
 			}
-			if m.X < 0 || m.X > g.width {
+			if m.GetX() < 0 || m.GetX() > g.width {
 				defer c.RemoveMissile(m.GetIDasString())
 				continue
 			}
-			if m.Y < 0 || m.Y > g.height {
+			if m.GetY() < 0 || m.GetY() > g.height {
 				defer c.RemoveMissile(m.GetIDasString())
 				continue
 			}
@@ -338,28 +338,28 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 				if tentsuyu.Collision(c.BasicObject, m.BasicObject) {
 					c.Hit()
 					defer ai.RemoveMissile(m.GetIDasString())
-					g.mainCamera.StartShaking(false)
+					g.mainCamera.StartShaking(10)
 					game.AudioPlayer.PlaySE("hit-planet")
-					g.explosions = append(g.explosions, CreateExplosion(m.X, m.Y, false))
+					g.explosions = append(g.explosions, CreateExplosion(m.GetX(), m.GetY(), false))
 					continue
 				}
 			}
 			if g.planet.IsAlive() && tentsuyu.Collision(g.planet.BasicObject, m.BasicObject) {
 				defer ai.RemoveMissile(m.GetIDasString())
-				g.mainCamera.StartShaking(true)
+				g.mainCamera.StartShaking(25)
 				game.AudioPlayer.PlaySE("hit-planet")
-				g.explosions = append(g.explosions, CreateExplosion(m.X, m.Y, false))
+				g.explosions = append(g.explosions, CreateExplosion(m.GetX(), m.GetY(), false))
 				g.planet.Health--
 				if g.planet.IsAlive() {
 					g.planet.Width = g.planet.Width / 2
 					g.planet.Height = g.planet.Height / 2
 				} else {
 					//Planet just died
-					g.explosions = append(g.explosions, CreateExplosion(g.planet.X, g.planet.Y, false))
-					g.explosions = append(g.explosions, CreateExplosion(g.planet.X+10, g.planet.Y, false))
-					g.explosions = append(g.explosions, CreateExplosion(g.planet.X-10, g.planet.Y, false))
-					g.explosions = append(g.explosions, CreateExplosion(g.planet.X, g.planet.Y+10, false))
-					g.explosions = append(g.explosions, CreateExplosion(g.planet.X, g.planet.Y-10, false))
+					g.explosions = append(g.explosions, CreateExplosion(g.planet.GetX(), g.planet.GetY(), false))
+					g.explosions = append(g.explosions, CreateExplosion(g.planet.GetX()+10, g.planet.GetY(), false))
+					g.explosions = append(g.explosions, CreateExplosion(g.planet.GetX()-10, g.planet.GetY(), false))
+					g.explosions = append(g.explosions, CreateExplosion(g.planet.GetX(), g.planet.GetY()+10, false))
+					g.explosions = append(g.explosions, CreateExplosion(g.planet.GetX(), g.planet.GetY()-10, false))
 					g.deathDelayCount = 1
 					for _, c := range g.cannons {
 						c.Health = 0
@@ -373,7 +373,7 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 					defer ai.RemoveMissile(m.GetIDasString())
 					if e.givePoints {
 
-						switch distance := tentsuyutils.Distance(g.planet.X, g.planet.Y, m.X, m.Y); {
+						switch distance := tentsuyutils.Distance(g.planet.GetX(), g.planet.GetY(), m.GetX(), m.GetY()); {
 						case distance < 100:
 							g.score += 5
 						case distance < 250:
@@ -386,7 +386,7 @@ func (g *GameMain) Update(game *tentsuyu.Game) error {
 						}
 
 					}
-					g.explosions = append(g.explosions, CreateExplosion(m.X, m.Y, e.givePoints)) //give points if the previous explosion should give points
+					g.explosions = append(g.explosions, CreateExplosion(m.GetX(), m.GetY(), e.givePoints)) //give points if the previous explosion should give points
 					n := rand.Intn(5) + 1
 					game.AudioPlayer.PlaySE("explosion" + strconv.Itoa(n))
 				}
@@ -443,10 +443,10 @@ func (g *GameMain) updateBullets() {
 
 func (g *GameMain) updatePlanetMovement(game *tentsuyu.Game) {
 	if game.Input.Button("Left").Down() {
-		g.planet.X -= 2
+		g.planet.AddX(-2)
 	}
 	if game.Input.Button("Right").Down() {
-		g.planet.X += 2
+		g.planet.AddX(2)
 	}
 }
 
@@ -556,7 +556,7 @@ func (g *GameMain) drawMain(screen *ebiten.Image) error {
 		op.GeoM.Scale(float64(g.planet.Width)/128, float64(g.planet.Height)/128)
 		op.GeoM.Translate(-float64(g.planet.Width/2), -float64(g.planet.Height/2))
 		//op.GeoM.Rotate(g.planet.Angle)
-		op.GeoM.Translate(g.planet.X, g.planet.Y)
+		op.GeoM.Translate(g.planet.GetX(), g.planet.GetY())
 		//g.mainCamera.ApplyCameraTransform(op, true)
 		screen.DrawImage(Game.ImageManager.ReturnImage("planet"), op)
 	}

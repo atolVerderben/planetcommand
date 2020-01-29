@@ -86,10 +86,10 @@ func (a *AILauncher) Update(planet *Planet) {
 	a.prevLaunch++
 	if a.prevLaunch >= a.nextLaunch { //TODO: Change this
 		if planet.IsAlive() {
-			a.LaunchMissile(planet.X, planet.Y)
+			a.LaunchMissile(planet.GetX(), planet.GetY())
 			for i := 0; i < a.extraLaunches; i++ {
 				if rand.Intn(8) == 1 {
-					a.LaunchMissile(planet.X, planet.Y)
+					a.LaunchMissile(planet.GetX(), planet.GetY())
 				}
 			}
 		}
@@ -103,11 +103,11 @@ func (a *AILauncher) LaunchMissile(tx, ty float64) {
 	if a.isVertical {
 		r := tentsuyutils.RandomBetween(0, a.Height)
 		a.missiles = append(a.missiles,
-			CreateMissile(a.X, float64(r), tx, ty, 0.5, "green"))
+			CreateMissile(a.GetX(), float64(r), tx, ty, 0.5, "green"))
 	} else {
 		r := tentsuyutils.RandomBetween(0, a.Width)
 		a.missiles = append(a.missiles,
-			CreateMissile(float64(r), a.Y, tx, ty, 0.5, "green"))
+			CreateMissile(float64(r), a.GetY(), tx, ty, 0.5, "green"))
 	}
 	Game.AudioPlayer.PlaySE("blaster2")
 }
