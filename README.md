@@ -26,10 +26,11 @@ Developed for the [Open Jam 2019](https://itch.io/jam/open-jam-2019) with the go
   * Add death animation
 * Smart Bombs
 * Improved AI
+* Shader effects (now with Ebiten 1.11+)
 
 ### Open Source Goodness
 
-#### Tools 
+#### Tools
 
 * [Go](https://github.com/golang/go>)
 * [Ebiten](https://ebiten.org)

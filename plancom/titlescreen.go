@@ -24,6 +24,7 @@ func NewTitleScreen(game *tentsuyu.Game) *TitleScreen {
 		message:        tentsuyu.NewTextElement(915, 500, 250, 100, game.UIController.ReturnFont(FntMain), []string{"PRESS ENTER ", " LEFT  CLICK"}, color.RGBA{249, 200, 14, 255}, 26),
 		exitMessage:    tentsuyu.NewTextElement(5, 5, 250, 100, game.UIController.ReturnFont(FntMain), []string{"ESC:  EXIT", "F11:   FULLSCREEN", "M:     MUTE"}, color.RGBA{249, 200, 14, 255}, 12),
 		clickCountDown: 1,
+		mainCamera:     game.DefaultCamera,
 	}
 
 	return g
@@ -62,8 +63,8 @@ func (g *TitleScreen) Draw(game *tentsuyu.Game) error {
 
 	game.Screen.DrawImage(game.ImageManager.ReturnImage("title"), op)
 
-	g.message.Draw(game.Screen)
-	g.exitMessage.Draw(game.Screen)
+	g.message.Draw(game.Screen, g.mainCamera)
+	g.exitMessage.Draw(game.Screen, g.mainCamera)
 	return nil
 }
 

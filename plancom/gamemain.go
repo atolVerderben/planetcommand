@@ -85,7 +85,7 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 		currentLevel:  1,
 		overlayX:      300,
 		overlayY:      40,
-		overlayText:   tentsuyu.NewTextElementStationary(720, 40, 720, 720, game.UIController.ReturnFont(FntMain), []string{}, color.RGBA{249, 200, 14, 255}, 24),
+		overlayText:   tentsuyu.NewTextElementStationary(720, 40, 720, 720, game.UIController.ReturnFont(FntMain), []string{""}, color.RGBA{249, 200, 14, 255}, 24),
 		deathDelay:    180,
 		scoreEntry:    NewScoreEntry(0, 80),
 		scoreSaveSpot: -1,
@@ -135,20 +135,20 @@ func NewGameMain(game *tentsuyu.Game) *GameMain {
 	/*
 		In the year 20XX, after most of the world has been destroyed by mysterious little green missiles from space, only 4 cities remain able to defend the planet!
 
-		Command the cannons to destroy the lasers and SAVE THE WORLD!
+		Command the cannons to destroy the missiles and SAVE THE WORLD!
 	*/
 	game.AdditionalCameras["MainCamera"] = g.mainCamera
 	g.SetOverlay([]string{"In the year 20XX, after most of the world has been",
 		"destroyed by mysterious little green missiles from space,",
 		"only 4 cities remain able to defend the planet!",
-		"Command the cannons to destroy the lasers and...", "", "                             SAVE THE WORLD!",
+		"Command the cannons to destroy the missiles and...", "", "                             SAVE THE WORLD!",
 		"", "", "", "", "", "", "", "", "", "", "", "",
 		"                                   CONTROLS:",
-		"      LEFT AND RIGHT ARROWS: ROTATE CANNONS",
-		"    CLICK MOUSE WITHIN THE CONES TO FIRE MISSILES",
+		" LEFT AND RIGHT ARROWS / A AND D: ROTATE CANNONS",
+		"     CLICK MOUSE WITHIN THE CONES TO FIRE MISSILES",
 		"", "", "                                CLICK OR ENTER",
 		"                                     TO BEGIN"}, 300, 0, 0, true)
-
+	g.overlayText.SetCentered(false)
 	g.cannonDisp = newcannonDisplay(g.cannons, game.UIController.ReturnFont(FntMain))
 
 	//Load High Scores
@@ -486,14 +486,14 @@ func (g *GameMain) Draw(game *tentsuyu.Game) error {
 	op = &ebiten.DrawImageOptions{}
 
 	game.Screen.DrawImage(game.ImageManager.ReturnImage("side-panel"), op)
-	g.scoreDisplay.Draw(game.Screen)
-	g.highScoreDisplay.Draw(game.Screen)
+	g.scoreDisplay.Draw(game.Screen, game.DefaultCamera)
+	g.highScoreDisplay.Draw(game.Screen, game.DefaultCamera)
 	for _, u := range g.textDisplays {
-		u.Draw(game.Screen)
+		u.Draw(game.Screen, game.DefaultCamera)
 	}
 
 	for _, t := range g.cannonDisp.names {
-		t.Draw(game.Screen)
+		t.Draw(game.Screen, game.DefaultCamera)
 	}
 
 	for _, c := range g.cannonDisp.bars {
@@ -501,11 +501,11 @@ func (g *GameMain) Draw(game *tentsuyu.Game) error {
 	}
 
 	for _, t := range g.highscores.scores {
-		t.Draw(game.Screen)
+		t.Draw(game.Screen, game.DefaultCamera)
 	}
 
 	if g.overlayTimer > 0 {
-		g.overlayText.Draw(game.Screen)
+		g.overlayText.Draw(game.Screen, game.DefaultCamera)
 	}
 
 	return nil
@@ -580,9 +580,9 @@ func (g *GameMain) drawMain(screen *ebiten.Image) error {
 
 	if g.playerDead || g.paused && g.overlayTimer <= 0 {
 		if g.enteringScore {
-			g.scoreEntry.Draw(screen)
+			g.scoreEntry.Draw(screen, g.mainCamera)
 		} else {
-			g.restartMenu.Draw(screen)
+			g.restartMenu.Draw(screen, g.mainCamera)
 		}
 	}
 	return nil

@@ -144,11 +144,11 @@ func (s *ScoreEntry) Update(input *tentsuyu.InputController) {
 }
 
 //Draw the score Entry
-func (s *ScoreEntry) Draw(screen *ebiten.Image) error {
-	s.TitleText.Draw(screen)
-	s.Text1.Draw(screen)
-	s.Text2.Draw(screen)
-	s.Text3.Draw(screen)
+func (s *ScoreEntry) Draw(screen *ebiten.Image, camera *tentsuyu.Camera) error {
+	s.TitleText.Draw(screen, camera)
+	s.Text1.Draw(screen, camera)
+	s.Text2.Draw(screen, camera)
+	s.Text3.Draw(screen, camera)
 
 	return nil
 }
